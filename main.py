@@ -4,7 +4,7 @@ from networkx.algorithms.components import number_connected_components
 from networkx.algorithms.bridges import bridges, local_bridges
 import matplotlib.pyplot as plt
 from count_bridges import count_bridges
-from count_connected_components import count_connected_components
+from connected_components import count_connected_components
 from Graph import Graph
 import sys
 
@@ -15,9 +15,9 @@ def main():
     graph = Graph()
     networkx_graph = nx.Graph()
 
-    file = open('Project dataset.csv')
+    file = open('localbridge.csv')
     csvreader = csv.reader(file)
-    next(csvreader)
+    next(csvreader)  # skip header
 
     for row in csvreader:
         graph.add_edge(row[1], row[2])
@@ -32,6 +32,9 @@ def main():
     print(len([b for b in bridges(networkx_graph)]))
 
     print(len([b for b in local_bridges(networkx_graph)]))
+
+    # for b in local_bridges(networkx_graph):
+    #    print(b)
 
     # options = {
     #     "font_size": 10,

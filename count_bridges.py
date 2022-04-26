@@ -1,7 +1,7 @@
 from Graph import Graph
 
 
-def count_bridges(graph):
+def count_bridges(graph: Graph) -> int:
     def dfs(graph: Graph, u: int, v: int, bridges_count: int, count: int, pre: list, low: list):
         pre[v] = count
         count += 1
