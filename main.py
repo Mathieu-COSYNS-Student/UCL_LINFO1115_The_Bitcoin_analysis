@@ -1,11 +1,12 @@
 import csv
-import networkx as nx
+"""import networkx as nx
 from networkx.algorithms.components import number_connected_components
-from networkx.algorithms.bridges import bridges, local_bridges
+from networkx.algorithms.bridges import bridges, local_bridges"""
 import matplotlib.pyplot as plt
 from bridges import count_bridges, count_local_bridges, remove_bridges
 from connected_components import count_connected_components
 from Graph import Graph
+from triadic_closure import triadic_closure
 import sys
 
 
@@ -13,19 +14,21 @@ def main():
     sys.setrecursionlimit(1500)
 
     graph = Graph()
-    networkx_graph = nx.Graph()
+    #networkx_graph = nx.Graph()
 
-    file = open('Project dataset.csv')
+    file = open('localbridge.csv')
     csvreader = csv.reader(file)
     next(csvreader)  # skip header
 
     for row in csvreader:
         graph.add_edge(row[1], row[2])
-        networkx_graph.add_edge(row[1], row[2])
+       # networkx_graph.add_edge(row[1], row[2])
 
     file.close()
+    print('Calculating the triadic closures : ')
+    print(triadic_closure(graph))
 
-    print(count_connected_components(graph))
+    """print(count_connected_components(graph))
     print(number_connected_components(networkx_graph))
 
     print(count_bridges(graph))
@@ -43,7 +46,7 @@ def main():
     print(number_connected_components(networkx_graph))
 
     print(count_local_bridges(remove_bridges(graph)))
-    print(len([e for e in local_bridges(networkx_graph)]))
+    print(len([e for e in local_bridges(networkx_graph)]))"""
 
 
 def graph_image(networkx_graph):
