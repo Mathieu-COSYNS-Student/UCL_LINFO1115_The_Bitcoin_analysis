@@ -1,5 +1,20 @@
 class Graph:
 
+    @staticmethod
+    def create(df, task=None):
+        graph = Graph()
+
+        if task == 2:
+            median = df['Timestamp'].median(axis=0)
+            df = df[df['Timestamp'] >= median]
+            df = df[~df[['Source', 'Target']].apply(
+                frozenset, axis=1).duplicated()]
+
+        for _, row in df.iterrows():
+            graph.add_edge(row['Source'], row['Target'])
+
+        return graph
+
     def __init__(self) -> None:
         """
         Initializes an empty graph.

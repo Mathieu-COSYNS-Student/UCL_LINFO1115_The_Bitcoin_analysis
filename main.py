@@ -1,32 +1,34 @@
-import csv
-"""import networkx as nx
+import networkx as nx
 from networkx.algorithms.components import number_connected_components
-from networkx.algorithms.bridges import bridges, local_bridges"""
+from networkx.algorithms.bridges import bridges, local_bridges
 import matplotlib.pyplot as plt
 from bridges import count_bridges, count_local_bridges, remove_bridges
 from connected_components import count_connected_components
 from Graph import Graph
 from triadic_closure import triadic_closure
 import sys
+import pandas as pd
+
+
+def create_networkx_graph(dataframe) -> nx.Graph:
+    graph = nx.Graph()
+
+    for index, row in dataframe.iterrows():
+        graph.add_edge(row['Source'], row['Target'])
+
+    return graph
 
 
 def main():
     sys.setrecursionlimit(1500)
 
-    graph = Graph()
-    #networkx_graph = nx.Graph()
+    df = pd.read_csv('Project dataset.csv', index_col=0)
 
-    file = open('localbridge.csv')
-    csvreader = csv.reader(file)
-    next(csvreader)  # skip header
-
-    for row in csvreader:
-        graph.add_edge(row[1], row[2])
-       # networkx_graph.add_edge(row[1], row[2])
-
-    file.close()
-    print('Calculating the triadic closures : ')
+    graph = Graph.create(df,task=2)
+    networkx_graph = create_networkx_graph(df)
+    print('Calculating triadic closure : ')
     print(triadic_closure(graph))
+
 
     """print(count_connected_components(graph))
     print(number_connected_components(networkx_graph))
