@@ -1,5 +1,14 @@
 class Graph:
 
+    @staticmethod
+    def create(dataframe):
+        graph = Graph()
+
+        for _, row in dataframe.iterrows():
+            graph.add_edge(row['Source'], row['Target'])
+
+        return graph
+
     def __init__(self) -> None:
         """
         Initializes an empty graph.

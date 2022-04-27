@@ -1,4 +1,3 @@
-import csv
 import networkx as nx
 from networkx.algorithms.components import number_connected_components
 from networkx.algorithms.bridges import bridges, local_bridges
@@ -7,23 +6,25 @@ from bridges import count_bridges, count_local_bridges, remove_bridges
 from connected_components import count_connected_components
 from Graph import Graph
 import sys
+import pandas as pd
+
+
+def create_networkx_graph(dataframe) -> nx.Graph:
+    graph = nx.Graph()
+
+    for index, row in dataframe.iterrows():
+        graph.add_edge(row['Source'], row['Target'])
+
+    return graph
 
 
 def main():
     sys.setrecursionlimit(1500)
 
-    graph = Graph()
-    networkx_graph = nx.Graph()
+    df = pd.read_csv('Project dataset.csv', index_col=0)
 
-    file = open('Project dataset.csv')
-    csvreader = csv.reader(file)
-    next(csvreader)  # skip header
-
-    for row in csvreader:
-        graph.add_edge(row[1], row[2])
-        networkx_graph.add_edge(row[1], row[2])
-
-    file.close()
+    graph = Graph.create(df)
+    networkx_graph = create_networkx_graph(df)
 
     print(count_connected_components(graph))
     print(number_connected_components(networkx_graph))
