@@ -8,6 +8,7 @@ class Graph:
         self.E = 0
         self.adj = list()
         self.uid_adj = dict()
+        self.adj_uid = dict()
         pass
 
     def exist_vertex(self, v: str) -> bool:
@@ -22,7 +23,9 @@ class Graph:
         """
         if self.exist_vertex(v):
             return
-        self.uid_adj[v] = len(self.adj)
+        index = len(self.adj)
+        self.uid_adj[v] = index
+        self.adj_uid[index] = v
         self.adj.append(list())
         self.V += 1
 
@@ -35,3 +38,7 @@ class Graph:
         self.adj[self.uid_adj[v]].append(self.uid_adj[w])
         self.adj[self.uid_adj[w]].append(self.uid_adj[v])
         self.E += 1
+
+    def remove_edge(self, v: int, w: int) -> None:
+        self.adj[v] = [i for i in self.adj[v] if i != w]
+        self.adj[w] = [i for i in self.adj[w] if i != v]
