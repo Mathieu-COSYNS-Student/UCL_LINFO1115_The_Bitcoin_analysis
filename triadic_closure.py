@@ -7,8 +7,10 @@ from Graph import Graph
 def are_neighbors(a: Any, c: Any, graph: Graph):
     return a in graph.adj[c]
 
+
 def are_already_triadic_closures(a: Any, c: Any, map_of_triadic_closures: dict ):
     return  f'{a}-{c}' in map_of_triadic_closures or f'{c}-{a}' in map_of_triadic_closures
+
 
 def is_triadic_closure(a: Any, c: Any, graph: Graph, map_of_triadic_closures: dict, closures: Literal):
     if a != c and not are_neighbors(a,c,graph) and not are_already_triadic_closures(a,c,map_of_triadic_closures):
