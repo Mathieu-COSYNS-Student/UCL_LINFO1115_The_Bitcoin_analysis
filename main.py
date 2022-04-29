@@ -28,8 +28,7 @@ def main():
 
     df = pd.read_csv('Project dataset.csv', index_col=0)
 
-    graph = Graph.create(df, task=2)
-    networkx_graph = create_networkx_graph(df)
+    graph, df_included, df_excluded = Graph.create(df, task=2, on_conflict=Graph.ON_CONFLICT_IGNORE)
     print('Calculating triadic closure : ')
     print(triadic_closure(graph))
 
