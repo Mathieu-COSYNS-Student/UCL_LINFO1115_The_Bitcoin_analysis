@@ -28,21 +28,22 @@ def main():
 
     df = pd.read_csv('Project dataset.csv', index_col=0)
 
-    graph, df_included, df_excluded = Graph.create(df, task=2, on_conflict=Graph.ON_CONFLICT_IGNORE)
-    print('Calculating triadic closure : ')
-    print(triadic_closure(graph))
+    # graph, df_included, df_excluded = Graph.create(df, task=2, on_conflict=Graph.ON_CONFLICT_IGNORE)
+    # print('Calculating triadic closure : ')
+    # print(triadic_closure(graph))
 
     median = df['Timestamp'].median(axis=0)
     graph, df_included, df_excluded = Graph.create(
         df, task=3, on_conflict=Graph.ON_CONFLICT_OVERRIDE_META)
     networkx_graph = create_networkx_graph(df_excluded)
 
-    print(sum(nx.triangles(networkx_graph).values())/3)
+    # print(sum(nx.triangles(networkx_graph).values())/3)
 
     t, bt, wbt = count_triangles(graph)
     balance_degree = (bt + (2/3 * wbt)) / t
 
-    data = np.array([balance_degree])
+    new_triangles_over_time = np.array([0])
+    balance_degree_over_time = np.array([balance_degree])
     time = np.array([median])
 
     for _, row in df_excluded.iterrows():
@@ -58,15 +59,18 @@ def main():
         bt += bt1 - bt0
         wbt += wbt1 - wbt0
         balance_degree = (bt + (2/3 * wbt)) / t
-        data = np.append(data, balance_degree)
+        new_triangles_over_time = np.append(new_triangles_over_time, t)
+        balance_degree_over_time = np.append(balance_degree_over_time, balance_degree)
         time = np.append(time, row['Timestamp'])
 
     t, bt, wbt = count_triangles(graph)
-    print(t, bt, wbt)
     balance_degree = (bt + (2/3 * wbt)) / t
 
-    plot(data, time, "Graph of the balance degree over time,\nstarting at the median timestamp until the end",
-         "Timestamp", "Balance degree", png="balance_degree_over_time.png", graphics=True)
+    plot(new_triangles_over_time, time, "Graph of accumulated triadic closure over time,\nstarting at the median timestamp until the end",
+         "Timestamp", "Accumulated triadic closure", png="accumulated_triadic_closure.png", graphics=False)
+
+    plot(balance_degree_over_time, time, "Graph of the balance degree over time,\nstarting at the median timestamp until the end",
+         "Timestamp", "Balance degree", png="balance_degree_over_time.png", graphics=False)
 
     """print(count_connected_components(graph))
     print(number_connected_components(networkx_graph))
