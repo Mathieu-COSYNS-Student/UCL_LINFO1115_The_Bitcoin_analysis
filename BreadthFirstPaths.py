@@ -40,10 +40,9 @@ class BreadthFirstPaths:
 
     def distanceTo(self,v):
         return self.distTo[v]
+
     
-    def pathTo(self,v):
-        if not self.hasPathTo(v):
-            return NULL
+        
 
 
 
