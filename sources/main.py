@@ -25,7 +25,7 @@ def create_networkx_graph(df, task=2) -> nx.Graph:
 def main():
     sys.setrecursionlimit(1500)
 
-    df = pd.read_csv('Project dataset.csv', index_col=0)
+    df = pd.read_csv('datasets/Project dataset.csv', index_col=0)
 
     median = df['Timestamp'].median(axis=0)
     graph, df_included, df_excluded = Graph.create(
@@ -63,10 +63,10 @@ def main():
     balance_degree = (bt + (2/3 * wbt)) / t
 
     plot(new_triangles_over_time, time, "Graph of accumulated triadic closure over time,\nstarting at the median timestamp until the end",
-         "Timestamp", "Accumulated triadic closure", png="accumulated_triadic_closure.png", graphics=False)
+         "Timestamp", "Accumulated triadic closure", png="images/accumulated_triadic_closure.png", graphics=False)
 
     plot(balance_degree_over_time, time, "Graph of the balance degree over time,\nstarting at the median timestamp until the end",
-         "Timestamp", "Balance degree", png="balance_degree_over_time.png", graphics=False)
+         "Timestamp", "Balance degree", png="images/balance_degree_over_time.png", graphics=False)
 
     print(count_connected_components(graph))
     print(number_connected_components(networkx_graph))
