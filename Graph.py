@@ -11,13 +11,7 @@ class Graph:
         df_included = df
         df_excluded = df[0:0]
 
-        if task == 2:
-            median = df['Timestamp'].median(axis=0)
-            df_included = df[df['Timestamp'] >= median]
-            df_included = df_included[~df_included[['Source', 'Target']].apply(
-                frozenset, axis=1).duplicated()]
-
-        if task == 3:
+        if task == 2 or task == 3:
             median = df['Timestamp'].median(axis=0)
             df_included = df[df['Timestamp'] < median]
             df_excluded = df[df['Timestamp'] >= median]

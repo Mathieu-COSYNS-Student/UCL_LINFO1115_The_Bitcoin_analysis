@@ -6,7 +6,6 @@ import numpy as np
 from bridges import count_bridges, count_local_bridges, remove_bridges
 from connected_components import count_connected_components
 from Graph import Graph
-from triadic_closure import triadic_closure
 import sys
 import pandas as pd
 from plot import plot
@@ -28,21 +27,16 @@ def main():
 
     df = pd.read_csv('Project dataset.csv', index_col=0)
 
-    # graph, df_included, df_excluded = Graph.create(df, task=2, on_conflict=Graph.ON_CONFLICT_IGNORE)
-    # print('Calculating triadic closure : ')
-    # print(triadic_closure(graph))
-
     median = df['Timestamp'].median(axis=0)
     graph, df_included, df_excluded = Graph.create(
         df, task=3, on_conflict=Graph.ON_CONFLICT_OVERRIDE_META)
-    networkx_graph = create_networkx_graph(df_excluded)
-
-    # print(sum(nx.triangles(networkx_graph).values())/3)
+    networkx_graph = create_networkx_graph(df)
 
     t, bt, wbt = count_triangles(graph)
+    nt = 0
     balance_degree = (bt + (2/3 * wbt)) / t
 
-    new_triangles_over_time = np.array([0])
+    new_triangles_over_time = np.array([nt])
     balance_degree_over_time = np.array([balance_degree])
     time = np.array([median])
 
@@ -58,9 +52,11 @@ def main():
         t += t1 - t0
         bt += bt1 - bt0
         wbt += wbt1 - wbt0
+        nt += t1 - t0
         balance_degree = (bt + (2/3 * wbt)) / t
-        new_triangles_over_time = np.append(new_triangles_over_time, t)
-        balance_degree_over_time = np.append(balance_degree_over_time, balance_degree)
+        new_triangles_over_time = np.append(new_triangles_over_time, nt)
+        balance_degree_over_time = np.append(
+            balance_degree_over_time, balance_degree)
         time = np.append(time, row['Timestamp'])
 
     t, bt, wbt = count_triangles(graph)
@@ -72,7 +68,7 @@ def main():
     plot(balance_degree_over_time, time, "Graph of the balance degree over time,\nstarting at the median timestamp until the end",
          "Timestamp", "Balance degree", png="balance_degree_over_time.png", graphics=False)
 
-    """print(count_connected_components(graph))
+    print(count_connected_components(graph))
     print(number_connected_components(networkx_graph))
 
     print(count_bridges(graph))
@@ -90,7 +86,7 @@ def main():
     print(number_connected_components(networkx_graph))
 
     print(count_local_bridges(remove_bridges(graph)))
-    print(len([e for e in local_bridges(networkx_graph)]))"""
+    print(len([e for e in local_bridges(networkx_graph)]))
 
 
 def graph_image(networkx_graph):
