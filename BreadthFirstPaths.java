@@ -271,7 +271,7 @@ public class BreadthFirstPaths {
         // StdOut.println(G);
 
         int s = Integer.parseInt(args[1]);
-        BreadthFirstPaths bfs = new BreadthFirstPaths(G, s);
+        BreadthFirstPaths bfs = new BreadFirstPaths(G, s);
 
         for (int v = 0; v < G.V(); v++) {
             if (bfs.hasPathTo(v)) {
