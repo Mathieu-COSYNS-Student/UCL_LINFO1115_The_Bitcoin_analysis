@@ -4,6 +4,7 @@ import pandas as pd
 from inginious_question_1 import basic_properties
 from inginious_question_2 import total_triadic_closures
 from inginious_question_3 import end_balanced_degree
+from inginious_question_4 import distances
 
 
 def main():
@@ -14,6 +15,7 @@ def main():
     print(basic_properties(df))
     print(total_triadic_closures(df))
     print(end_balanced_degree(df))
+    print(distances(df))
 
 
 if __name__ == "__main__":

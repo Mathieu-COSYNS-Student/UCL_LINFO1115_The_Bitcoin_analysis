@@ -3,21 +3,31 @@ from matplotlib import pyplot as plt
 
 class Graph:
 
+    TYPE_UNDIRECTED = 0
+    TYPE_DIRECTED = 1
+
     ON_CONFLICT_IGNORE = 0
     ON_CONFLICT_OVERRIDE_META = 1
 
     @staticmethod
-    def create(df, task=None, on_conflict=None):
-        graph = Graph()
+    def create(df, task=None):
+        graph = Graph(type=Graph.TYPE_DIRECTED if task ==
+                      4 else Graph.TYPE_UNDIRECTED)
 
         df = df.sort_values(by='Timestamp')
         df_included = df
         df_excluded = df[0:0]
+        on_conflict = None
 
         if task == 2 or task == 3:
             median = df['Timestamp'].median(axis=0)
             df_included = df[df['Timestamp'] < median]
             df_excluded = df[df['Timestamp'] >= median]
+
+        if task == 2 or task == 4:
+            on_conflict = Graph.ON_CONFLICT_IGNORE
+        if task == 3:
+            on_conflict = Graph.ON_CONFLICT_OVERRIDE_META
 
         for _, row in df_included.iterrows():
             graph.add_edge(row['Source'],
@@ -27,10 +37,11 @@ class Graph:
 
         return graph, df_included, df_excluded
 
-    def __init__(self) -> None:
+    def __init__(self, type=TYPE_UNDIRECTED) -> None:
         """
         Initializes an empty graph.
         """
+        self.type = type
         self.V = 0
         self.E = 0
         self.adj = list()
@@ -74,12 +85,15 @@ class Graph:
             return
         if on_conflict == Graph.ON_CONFLICT_OVERRIDE_META and self.exist_edge(v, w):
             self.edge_meta[f'{v}-{w}'] = meta
-            self.edge_meta[f'{w}-{v}'] = meta
+            if self.type == Graph.TYPE_UNDIRECTED:
+                self.edge_meta[f'{w}-{v}'] = meta
             return
         self.adj[self.uid_adj[v]].append(self.uid_adj[w])
-        self.adj[self.uid_adj[w]].append(self.uid_adj[v])
+        if self.type == Graph.TYPE_UNDIRECTED:
+            self.adj[self.uid_adj[w]].append(self.uid_adj[v])
         self.edge_meta[f'{v}-{w}'] = meta
-        self.edge_meta[f'{w}-{v}'] = meta
+        if self.type == Graph.TYPE_UNDIRECTED:
+            self.edge_meta[f'{w}-{v}'] = meta
         self.E += 1
 
     def get_edge_meta(self, v: str, w: str):
@@ -87,21 +101,22 @@ class Graph:
 
     def remove_edge(self, v: int, w: int) -> None:
         self.adj[v] = [i for i in self.adj[v] if i != w]
-        self.adj[w] = [i for i in self.adj[w] if i != v]
+        if self.type == Graph.TYPE_UNDIRECTED:
+            self.adj[w] = [i for i in self.adj[w] if i != v]
 
 
 def connected_components(graph: Graph):
     def dfs(graph: Graph, v: int, ids: dict, count: int):
-        ids[v] = count
+        ids[graph.adj_uid[v]] = count
         for w in graph.adj[v]:
-            if w not in ids:
+            if graph.adj_uid[w] not in ids:
                 dfs(graph, w, ids, count)
 
     ids = dict()
     count = 0
 
     for v in range(0, len(graph.adj)):
-        if v not in ids:
+        if graph.adj_uid[v] not in ids:
             dfs(graph, v, ids, count)
             count += 1
 
@@ -114,10 +129,25 @@ def count_connected_components(graph: Graph) -> int:
     return count
 
 
-def group_connected_components(graph: Graph) -> int:
+def group_connected_components(graph: Graph) -> dict:
     _, group = connected_components(graph)
 
-    return group
+    res = {}
+    for i, v in group.items():
+        res[v] = [i] if v not in res.keys() else res[v] + [i]
+
+    return res
+
+
+def get_bigest_component_vertices(graph: Graph) -> int:
+    groups = group_connected_components(graph)
+    bigest_component = None
+
+    for _, group in groups.items():
+        if bigest_component is None or len(group) > len(bigest_component):
+            bigest_component = group
+
+    return bigest_component
 
 
 def count_triangles(graph: Graph, node: int = None, edge=None, explored_nodes=set()) -> int:
@@ -176,9 +206,9 @@ def count_triangles(graph: Graph, node: int = None, edge=None, explored_nodes=se
     return int(triangles / 3), int(balanced_triangles / 3), int(weakly_balanced_triangles / 3)
 
 
-def plot(data, time, title=None, xlabel=None, ylabel=None, png=None, graphics=True):
+def plot(data, ticks, title=None, xlabel=None, ylabel=None, png=None, graphics=True):
 
-    plt.plot(time, data, "o-")
+    plt.plot(ticks, data, "o-")
 
     plt.title(title)
 

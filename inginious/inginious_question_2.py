@@ -11,8 +11,7 @@ def total_triadic_closures(dataframe):
     df = dataframe
 
     median = df['Timestamp'].median(axis=0)
-    graph, df_included, df_excluded = Graph.create(
-        df, task=2, on_conflict=Graph.ON_CONFLICT_OVERRIDE_META)
+    graph, df_included, df_excluded = Graph.create(df, task=2)
 
     nt = 0
     new_triangles_over_time = [nt]
@@ -24,7 +23,7 @@ def total_triadic_closures(dataframe):
         graph.add_edge(row['Source'],
                        row['Target'],
                        meta={'weight': row['Weight']},
-                       on_conflict=Graph.ON_CONFLICT_OVERRIDE_META)
+                       on_conflict=Graph.ON_CONFLICT_IGNORE)
         t1, _, _ = count_triangles(
             graph, edge=(row['Source'], row['Target']))
         nt += t1 - t0

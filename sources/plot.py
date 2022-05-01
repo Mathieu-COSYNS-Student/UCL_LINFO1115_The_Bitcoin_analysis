@@ -1,9 +1,9 @@
 from matplotlib import pyplot as plt
 
 
-def plot(data, time, title=None, xlabel=None, ylabel=None, png=None, graphics=True):
+def plot(data, ticks, title=None, xlabel=None, ylabel=None, png=None, graphics=True):
 
-    plt.plot(time, data, "o-")
+    plt.plot(ticks, data, "o-")
 
     plt.title(title)
 

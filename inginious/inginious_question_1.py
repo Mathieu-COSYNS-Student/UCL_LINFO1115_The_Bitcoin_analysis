@@ -9,8 +9,7 @@ def basic_properties(dataframe):
 
     df = dataframe
 
-    graph, df_included, df_excluded = Graph.create(
-        df, task=1, on_conflict=Graph.ON_CONFLICT_OVERRIDE_META)
+    graph, df_included, df_excluded = Graph.create(df, task=1)
 
     def count_bridges(graph: Graph, remove=False) -> int:
         def dfs(graph: Graph, u: int, v: int, remove: bool, bridges_count: int, count: int, pre: list, low: list):

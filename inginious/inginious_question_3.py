@@ -11,8 +11,7 @@ def end_balanced_degree(dataframe):
     df = dataframe
 
     median = df['Timestamp'].median(axis=0)
-    graph, df_included, df_excluded = Graph.create(
-        df, task=3, on_conflict=Graph.ON_CONFLICT_OVERRIDE_META)
+    graph, df_included, df_excluded = Graph.create(df, task=3)
 
     t, bt, wbt = count_triangles(graph)
     balance_degree = (bt + (2/3 * wbt)) / t

@@ -1,20 +1,30 @@
 class Graph:
 
+    TYPE_UNDIRECTED = 0
+    TYPE_DIRECTED = 1
+
     ON_CONFLICT_IGNORE = 0
     ON_CONFLICT_OVERRIDE_META = 1
 
     @staticmethod
-    def create(df, task=None, on_conflict=None):
-        graph = Graph()
+    def create(df, task=None):
+        graph = Graph(type=Graph.TYPE_DIRECTED if task ==
+                      4 else Graph.TYPE_UNDIRECTED)
 
         df = df.sort_values(by='Timestamp')
         df_included = df
         df_excluded = df[0:0]
+        on_conflict = None
 
         if task == 2 or task == 3:
             median = df['Timestamp'].median(axis=0)
             df_included = df[df['Timestamp'] < median]
             df_excluded = df[df['Timestamp'] >= median]
+
+        if task == 2 or task == 4:
+            on_conflict = Graph.ON_CONFLICT_IGNORE
+        if task == 3:
+            on_conflict = Graph.ON_CONFLICT_OVERRIDE_META
 
         for _, row in df_included.iterrows():
             graph.add_edge(row['Source'],
@@ -24,10 +34,11 @@ class Graph:
 
         return graph, df_included, df_excluded
 
-    def __init__(self) -> None:
+    def __init__(self, type=TYPE_UNDIRECTED) -> None:
         """
         Initializes an empty graph.
         """
+        self.type = type
         self.V = 0
         self.E = 0
         self.adj = list()
@@ -71,12 +82,15 @@ class Graph:
             return
         if on_conflict == Graph.ON_CONFLICT_OVERRIDE_META and self.exist_edge(v, w):
             self.edge_meta[f'{v}-{w}'] = meta
-            self.edge_meta[f'{w}-{v}'] = meta
+            if self.type == Graph.TYPE_UNDIRECTED:
+                self.edge_meta[f'{w}-{v}'] = meta
             return
         self.adj[self.uid_adj[v]].append(self.uid_adj[w])
-        self.adj[self.uid_adj[w]].append(self.uid_adj[v])
+        if self.type == Graph.TYPE_UNDIRECTED:
+            self.adj[self.uid_adj[w]].append(self.uid_adj[v])
         self.edge_meta[f'{v}-{w}'] = meta
-        self.edge_meta[f'{w}-{v}'] = meta
+        if self.type == Graph.TYPE_UNDIRECTED:
+            self.edge_meta[f'{w}-{v}'] = meta
         self.E += 1
 
     def get_edge_meta(self, v: str, w: str):
@@ -84,4 +98,5 @@ class Graph:
 
     def remove_edge(self, v: int, w: int) -> None:
         self.adj[v] = [i for i in self.adj[v] if i != w]
-        self.adj[w] = [i for i in self.adj[w] if i != v]
+        if self.type == Graph.TYPE_UNDIRECTED:
+            self.adj[w] = [i for i in self.adj[w] if i != v]
