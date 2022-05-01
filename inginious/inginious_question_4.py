@@ -33,9 +33,11 @@ def distances(dataframe):
         for v in vertices:
             v_distances = bfs(graph, graph.uid_adj[v])
 
-            for dist in v_distances.values():
+            for w, dist in v_distances.items():
                 if dist not in distances:
                     distances[dist] = 0
+                # if dist == 11:
+                #     print(f'{v}->{graph.adj_uid[w]}')
                 distances[dist] += 1
 
         max_key = max(distances.keys())

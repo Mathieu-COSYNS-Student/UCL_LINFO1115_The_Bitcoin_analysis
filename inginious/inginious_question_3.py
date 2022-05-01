@@ -15,6 +15,8 @@ def end_balanced_degree(dataframe):
 
     t, bt, wbt = count_triangles(graph)
     balance_degree = (bt + (2/3 * wbt)) / t
+    heightest_balanced_degree = balance_degree
+    heightest_balanced_degree_timestamp = median
 
     balance_degree_over_time = [balance_degree]
     time = [median]
@@ -33,6 +35,9 @@ def end_balanced_degree(dataframe):
         wbt += wbt1 - wbt0
         balance_degree = (bt + (2/3 * wbt)) / t
         balance_degree_over_time.append(balance_degree)
+        if balance_degree > heightest_balanced_degree:
+            heightest_balanced_degree = balance_degree
+            heightest_balanced_degree_timestamp = row['Timestamp']
         time.append(row['Timestamp'])
 
     t, bt, wbt = count_triangles(graph)
